@@ -9,7 +9,7 @@ interface ExpansionSourceProps {
   };
 }
 
-const ExpansionSource = async ({ searchParams }: ExpansionSourceProps) => {
+const Cooler = async ({ searchParams }: ExpansionSourceProps) => {
   const selectedBrand = searchParams.brand || "all";
   const sortOrder = searchParams.sort || "default";
 
@@ -85,4 +85,4 @@ const ExpansionSource = async ({ searchParams }: ExpansionSourceProps) => {
   );
 };
 
-export default ExpansionSource;
+export default Cooler;
