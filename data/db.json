@@ -1,0 +1,146 @@
+[
+  {
+    "id": 2,
+    "title": "پمپ آب خانگی پنتاکس PM45",
+    "price": 3000000,
+    "before_discount_price": 3500000,
+    "inventory": 52,
+    "brand": "پنتاکس ",
+    "catalog_url": "/download",
+    "images": [
+      "https://rahabsanat.ir/wp-content/uploads/2024/10/pentax-pm45-household-water-pump.webp"
+    ],
+    "categories": ["پمپ آب خانگی", "الکترو پمپ "],
+    "specifications": [
+      { "key": "brand", "label": "برند", "value": "پنتاکس" },
+      {
+        "key": "mahdoode_dama",
+        "label": "محدوده دمای سیال",
+        "value": "0 تا 90 درجه سانتیگراد"
+      },
+      { "key": "frequency", "label": "فرکانس", "value": "50 هرتز" }
+    ]
+  },
+  {
+    "id": 4,
+    "title": "پمپ آب خانگی تایفو سری QB",
+    "price": 4500000,
+    "before_discount_price": 5000000,
+    "inventory": 30,
+    "brand": "تایفو",
+    "catalog_url": "/download",
+    "images": [
+      "https://rahabsanat.ir/wp-content/uploads/2024/10/taifu-qb-series-household-water-pump-1-768x768.webp"
+    ],
+    "categories": ["پمپ آب خانگی", "الکترو پمپ "],
+    "specifications": [
+      { "key": "brand", "label": "برند", "value": "پنتاکس" },
+      {
+        "key": "mahdoode_dama",
+        "label": "محدوده دمای سیال",
+        "value": "0 تا 90 درجه سانتیگراد"
+      },
+      { "key": "frequency", "label": "فرکانس", "value": "50 هرتز" }
+    ]
+  },
+  {
+    "id": 11,
+    "title": "الکتروپمپ گازوئیل 12 ولت SPRING",
+    "price": 1500000,
+    "before_discount_price": 1600000,
+    "inventory": 10,
+    "brand": "SPRING",
+    "catalog_url": "/download",
+    "images": [
+      "https://rahabsanat.ir/wp-content/uploads/2025/06/12v-diesel-electric-pump-spring-2.webp",
+      "https://rahabsanat.ir/wp-content/uploads/2025/06/12v-diesel-electric-pump-spring-1.webp"
+    ],
+    "categories": ["پمپ آب خانگی", "الکترو پمپ"],
+    "specifications": [
+      {
+        "key": "voltage",
+        "label": "ولتاژ ",
+        "value": "12 ولت (برق باتری خودرو)"
+      },
+      { "key": "brand", "label": "برند", "value": "Spring" },
+      { "key": "outlet", "label": "قطر دهانه خروجی پمپ", "value": "1 اینچ" },
+      { "key": "inlet", "label": "قطر دهانه ورودی پمپ", "value": "1 اینچ" }
+    ]
+  },
+  {
+    "id": 12,
+    "title": "پمپ آب 1.5 اسب دو پروانه پنتاکسCB160/01",
+    "price": 2500000,
+    "before_discount_price": 3000000,
+    "inventory": 23,
+    "brand": "PENTAX",
+    "catalog_url": "/download",
+    "images": [
+      "https://rahabsanat.ir/wp-content/uploads/2025/04/pentax-cb-160-01-1.5hp-water-pump-1.webp",
+      "https://rahabsanat.ir/wp-content/uploads/2025/04/pentax-cb-160-01-1.5hp-water-pump-3.webp",
+      "https://rahabsanat.ir/wp-content/uploads/2025/04/pentax-cb-160-01-1.5hp-water-pump-2.webp"
+    ],
+    "categories": [" الکترو پمپ", " پمپ آب خانگی"],
+    "specifications": [
+      { "key": "brand", "label": "برند", "value": "PENTAX" },
+      {
+        "key": "mahdode_dama",
+        "label": "محدوده دمای سیال",
+        "value": "0 تا 90 درجه سانتیگراد"
+      },
+      { "key": "material", "label": "جنس بدنه", "value": "چدن" },
+      {
+        "key": "electro_motor",
+        "label": "الکتروموتور قابل اتصال\t",
+        "value": "2900 دور"
+      },
+      {
+        "key": "material_butterfly",
+        "label": "جنس پروانه\t",
+        "value": "برنج Brass"
+      }
+    ]
+  },
+  {
+    "id": 14,
+    "title": "پمپ آب 1.5 اسب دو پروانه پنتاکسCB160/01",
+    "price": 250000,
+    "before_discount_price": 260000,
+    "inventory": 45,
+    "brand": "زسزس",
+    "catalog_url": "/fsd",
+    "images": [
+      "https://rahabsanat.ir/wp-content/uploads/2025/04/pentax-cb-160-01-1.5hp-water-pump-3-200x200.webp",
+      "https://rahabsanat.ir/wp-content/uploads/2025/04/pentax-cb-160-01-1.5hp-water-pump-2-200x200.webp"
+    ],
+    "categories": ["زس", "زس"],
+    "specifications": [{ "key": "brand", "label": "برند", "value": "زیمنس" }]
+  },
+  {
+    "id": 15,
+    "title": "پمپ آب 1.5 اسب دو پروانه پنتاکسCB160/01",
+    "price": 250000,
+    "before_discount_price": 260000,
+    "inventory": 45,
+    "brand": "زسزس",
+    "catalog_url": "/fsd",
+    "images": [],
+    "categories": [],
+    "specifications": []
+  },
+  {
+    "id": 16,
+    "title": "پمپ آب 1.5 اسب دو پروانه پنتاکسCB160/01",
+    "price": 250000,
+    "before_discount_price": 260000,
+    "inventory": 45,
+    "brand": "زسزس",
+    "catalog_url": "/fsd",
+    "images": [
+      "https://rahabsanat.ir/wp-content/uploads/2025/04/pentax-cb-160-01-1.5hp-water-pump-3-200x200.webp",
+      "https://rahabsanat.ir/wp-content/uploads/2025/04/pentax-cb-160-01-1.5hp-water-pump-2-200x200.webp"
+    ],
+    "categories": ["زس", "زس"],
+    "specifications": [{ "key": "brand", "label": "برند", "value": "زیمنس" }]
+  }
+]
