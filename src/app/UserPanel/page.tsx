@@ -189,7 +189,7 @@ const UserPanel = () => {
                     <div className="grid md:grid-cols-2 gap-4">
                       {parsedProducts.length > 0 ? (
                         parsedProducts.map((product, index) => (
-                          <OrderItem id={product.id} qty={product.qty} />
+                          <OrderItem key={index} id={product.id} qty={product.qty} />
                         ))
                       ) : (
                         <li className="text-gray-400 italic">

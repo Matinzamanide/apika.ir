@@ -1,10 +1,13 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation"; 
-import { useAuthContext } from "@/context/AuthContext"; 
+import { useRouter } from "next/navigation";
+import { useAuthContext } from "@/context/AuthContext";
+import { motion, AnimatePresence } from "framer-motion";
+import { Phone, ShieldCheck, UserCircle, ArrowRight, Loader2, RefreshCw } from "lucide-react";
+
 const AuthFlow = () => {
-  const [step, setStep] = useState<1 | 2 | 3>(1); 
+  const [step, setStep] = useState<1 | 2 | 3>(1);
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
   const [isNewUser, setIsNewUser] = useState(false);
@@ -12,71 +15,53 @@ const AuthFlow = () => {
   const [family, setFamily] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [timer, setTimer] = useState(120); 
-  const [showResendButton, setShowResendButton] = useState(false); 
+  const [timer, setTimer] = useState(120);
+  const [showResendButton, setShowResendButton] = useState(false);
 
-  const router = useRouter(); 
-  const { isLoggedIn, setIsLoggedIn, phoneNumber, setPhoneNumber } =
-    useAuthContext();
+  const router = useRouter();
+  const { isLoggedIn, setIsLoggedIn, setPhoneNumber, setName: setContextName, setFamily: setContextFamily } = useAuthContext();
 
-  useEffect(() => {
-    setError("");
-  }, [step]);
+  // انیمیشن‌های Framer Motion
+  const variants = {
+    enter: (direction: number) => ({ x: direction > 0 ? 100 : -100, opacity: 0 }),
+    center: { x: 0, opacity: 1 },
+    exit: (direction: number) => ({ x: direction < 0 ? 100 : -100, opacity: 0 }),
+  };
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
     if (step === 2 && timer > 0) {
-      interval = setInterval(() => {
-        setTimer((prevTimer) => prevTimer - 1);
-      }, 1000);
+      interval = setInterval(() => setTimer((prev) => prev - 1), 1000);
     } else if (timer === 0) {
       setShowResendButton(true);
-      if (interval) {
-        clearInterval(interval);
-      }
     }
-    return () => {
-      if (interval) {
-        clearInterval(interval);
-      }
-    };
+    return () => { if (interval) clearInterval(interval); };
   }, [step, timer]);
 
   useEffect(() => {
-    if (isLoggedIn) {
-      router.push("/UserPanel");
-    }
-  }, [isLoggedIn, router]); 
-
-  const formatTime = (seconds: number) => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes.toString().padStart(2, "0")}:${remainingSeconds
-      .toString()
-      .padStart(2, "0")}`;
-  };
+    if (isLoggedIn) router.push("/UserPanel");
+  }, [isLoggedIn, router]);
 
   const handleSendOtp = async (isResend = false) => {
+    if (phone.length < 11) { setError("شماره موبایل معتبر نیست."); return; }
     setLoading(true);
     setError("");
-    setShowResendButton(false); 
-    setTimer(120); 
     try {
       const res = await fetch("https://apika.ir/apitak/auth/send_otp.php", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: new URLSearchParams({ phone }),
       });
       const data = await res.json();
       if (data.otp) {
-        if (!isResend) setStep(2); 
+        if (!isResend) setStep(2);
+        setTimer(120);
+        setShowResendButton(false);
       } else {
-        setError(data.message || "مشکلی در ارسال کد تأیید پیش آمد."); 
+        setError(data.message || "خطایی رخ داد.");
       }
     } catch (err) {
-      setError("خطا در برقراری ارتباط با سرور."); 
+      setError("ارتباط با سرور برقرار نشد.");
     } finally {
       setLoading(false);
     }
@@ -88,210 +73,151 @@ const AuthFlow = () => {
     try {
       const res = await fetch("https://apika.ir/apitak/auth/verify_otp.php", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: new URLSearchParams({ phone, code: otp }),
       });
       const data = await res.json();
       if (data.status === "existing") {
-        setIsLoggedIn(true); 
         setPhoneNumber(phone);
-        router.push("/UserPanel");
+        setIsLoggedIn(true);
       } else if (data.status === "new") {
         setIsNewUser(true);
-        setStep(3); 
+        setStep(3);
       } else {
-        setError(data.message || "کد تأیید اشتباه است."); 
+        setError("کد وارد شده صحیح نیست.");
       }
     } catch (err) {
-      setError("خطا در برقراری ارتباط با سرور.");
+      setError("خطا در تایید کد.");
     } finally {
       setLoading(false);
     }
   };
 
-  // Register new user
   const handleRegister = async () => {
+    if (!name || !family) { setError("لطفاً اطلاعات را کامل کنید."); return; }
     setLoading(true);
-    setError("");
     try {
-      const res = await fetch(
-        "https://apika.ir/apitak/auth/register_user.php",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-          body: new URLSearchParams({ phone, name, family }),
-        }
-      );
+      const res = await fetch("https://apika.ir/apitak/auth/register_user.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({ phone, name, family }),
+      });
       const data = await res.json();
       if (data.success) {
-        setIsLoggedIn(true); 
         setPhoneNumber(phone);
-        
-        router.push("/UserPanel"); 
+        setContextName(name);
+        setContextFamily(family);
+        setIsLoggedIn(true);
       } else {
-        setError(data.message || "مشکلی در ثبت‌نام پیش آمد.");
+        setError(data.message);
       }
-    } catch (err) {
-      setError("خطا در برقراری ارتباط با سرور."); 
+    } catch {
+      setError("خطا در ثبت‌نام.");
+    } finally {
       setLoading(false);
     }
   };
 
-  
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-    setPhoneNumber(""); 
-    setStep(1); 
-    setPhone(""); 
-    setOtp(""); 
-    setName("");
-    setFamily("");
-    
-    router.push("/"); 
-  };
-
-
-  const buttonClass = (color: string) => `
-    w-full ${color} text-white p-3 rounded-lg font-semibold
-    transition duration-300 ease-in-out transform hover:scale-105
-    focus:outline-none focus:ring-2 focus:ring-offset-2
-    ${loading ? "opacity-70 cursor-not-allowed" : ""}
-  `;
-
-  
-  const inputClass = `
-    w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
-    transition duration-200 ease-in-out
-  `;
-
-  
-  if (isLoggedIn) {
-    return null;
-  }
+  if (isLoggedIn) return null;
 
   return (
-    <div className="max-w-md p-8 bg-white shadow-xl rounded-2xl space-y-8 animate-fade-in">
-      <h1 className="text-3xl font-extrabold text-center text-gray-800 mb-6">
-        {step === 1 && "ورود / ثبت‌نام"}
-        {step === 2 && "تأیید کد"}
-        {step === 3 && "تکمیل اطلاعات"}
-      </h1>
-
-      {error && (
-        <div
-          className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative animate-slide-in-down"
-          role="alert"
-        >
-          <span className="block sm:inline">{error}</span>
-        </div>
-      )}
-
-     
-      {step === 1 && (
-        <div className="space-y-6 animate-fade-in-up">
-          <p className="text-gray-600 text-center">
-            شماره موبایل خود را وارد کنید تا کد تأیید برای شما ارسال شود.
-          </p>
-          <input
-            type="tel"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            placeholder="مثلاً 09123456789"
-            className={inputClass}
-            dir="rtl"
-          />
-          <button
-            onClick={() => handleSendOtp(false)}
-            className={buttonClass(
-              "bg-blue-600 hover:bg-blue-700 focus:ring-blue-500"
-            )}
-            disabled={loading}
-          >
-            {loading ? "در حال ارسال..." : "دریافت کد تأیید"}
-          </button>
-        </div>
-      )}
-
-      {step === 2 && (
-        <div className="space-y-6 animate-fade-in-up">
-          <p className="text-gray-600 text-center">
-            کد 6 رقمی ارسال شده به شماره **{phone}** را وارد کنید.
-          </p>
-          <input
-            type="text"
-            value={otp}
-            onChange={(e) => setOtp(e.target.value)}
-            placeholder="کد 6 رقمی"
-            className={inputClass + " text-center tracking-widest"}
-            maxLength={6}
-            dir="ltr" 
-          />
-          <div className="text-center text-sm font-medium animate-fade-in">
-            {timer > 0 ? (
-              <p className="text-gray-500">
-                زمان باقی‌مانده: **{formatTime(timer)}**
-              </p>
-            ) : (
-              <p className="text-red-500">زمان به پایان رسید.</p>
-            )}
+    <div className="min-h-[500px] flex items-center justify-center p-4">
+      <div className="w-full max-w-md bg-white/80 backdrop-blur-2xl rounded-[2.5rem] shadow-[0_22px_70px_4px_rgba(0,0,0,0.1)] border border-white p-8 relative overflow-hidden">
+        
+        {/* هدر هوشمند */}
+        <div className="text-center mb-8">
+          <div className="inline-flex p-4 rounded-3xl bg-blue-50 text-blue-600 mb-4">
+            {step === 1 && <Phone size={32} />}
+            {step === 2 && <ShieldCheck size={32} />}
+            {step === 3 && <UserCircle size={32} />}
           </div>
-          <button
-            onClick={handleVerifyOtp}
-            className={buttonClass(
-              "bg-green-600 hover:bg-green-700 focus:ring-green-500"
-            )}
-            disabled={loading || timer === 0}
-          >
-            {loading ? "در حال تأیید..." : "تأیید کد"}
-          </button>
-          {showResendButton && (
-            <button
-              onClick={() => handleSendOtp(true)}
-              className={buttonClass(
-                "bg-gray-500 hover:bg-gray-600 focus:ring-gray-400"
-              )}
-              disabled={loading}
-            >
-              {loading ? "در حال ارسال مجدد..." : "ارسال مجدد کد"}
-            </button>
-          )}
-        </div>
-      )}
-
-      {step === 3 && isNewUser && (
-        <div className="space-y-6 animate-fade-in-up">
-          <p className="text-gray-600 text-center">
-            برای تکمیل ثبت‌نام، نام و نام خانوادگی خود را وارد کنید.
+          <h1 className="text-2xl font-black text-gray-800">
+            {step === 1 && "خوش آمدید"}
+            {step === 2 && "تایید هویت"}
+            {step === 3 && "ساخت حساب کاربری"}
+          </h1>
+          <p className="text-gray-500 text-sm mt-2">
+            {step === 1 && "برای شروع شماره موبایل خود را وارد کنید"}
+            {step === 2 && `کد پیامک شده به ${phone} را وارد کنید`}
+            {step === 3 && "اطلاعات خود را برای اولین بار تکمیل کنید"}
           </p>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="نام"
-            className={inputClass}
-          />
-          <input
-            type="text"
-            value={family}
-            onChange={(e) => setFamily(e.target.value)}
-            placeholder="نام خانوادگی"
-            className={inputClass}
-          />
-          <button
-            onClick={handleRegister}
-            className={buttonClass(
-              "bg-purple-600 hover:bg-purple-700 focus:ring-purple-500"
-            )}
-            disabled={loading}
-          >
-            {loading ? "در حال ثبت‌نام..." : "ثبت نام و ورود"}
-          </button>
         </div>
-      )}
+
+        <AnimatePresence mode="wait" custom={step}>
+          <motion.div
+            key={step}
+            custom={step}
+            variants={variants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            className="space-y-5"
+          >
+            {error && (
+              <motion.div initial={{ scale: 0.9 }} animate={{ scale: 1 }} className="bg-red-50 text-red-600 p-3 rounded-2xl text-xs text-center border border-red-100">
+                {error}
+              </motion.div>
+            )}
+
+            {step === 1 && (
+              <>
+                <div className="relative">
+                  <input
+                    type="tel"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="0912XXXXXXX"
+                    className="w-full bg-gray-50/50 border-2 border-gray-100 focus:border-blue-500 focus:bg-white rounded-2xl p-4 pr-12 outline-none transition-all text-left font-bold tracking-widest"
+                  />
+                  <Phone className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+                </div>
+                <button onClick={() => handleSendOtp()} disabled={loading} className="group w-full bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-2xl font-bold shadow-lg shadow-blue-200 transition-all flex items-center justify-center gap-2">
+                  {loading ? <Loader2 className="animate-spin" /> : <>دریافت کد تایید <ArrowRight size={18} className="group-hover:translate-x-[-4px] transition-transform" /></>}
+                </button>
+              </>
+            )}
+
+            {step === 2 && (
+              <>
+                <input
+                  type="text"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                  placeholder="• • • • • •"
+                  maxLength={6}
+                  className="w-full bg-gray-50 border-2 border-gray-100 focus:border-green-500 focus:bg-white rounded-2xl p-4 text-center text-2xl font-black tracking-[1rem] outline-none transition-all"
+                />
+                <div className="flex justify-between items-center px-2 text-sm">
+                  {showResendButton ? (
+                    <button onClick={() => handleSendOtp(true)} className="text-blue-600 font-bold flex items-center gap-1 hover:underline">
+                      <RefreshCw size={14} /> ارسال مجدد کد
+                    </button>
+                  ) : (
+                    <span className="text-gray-400 font-medium">ارسال مجدد تا {timer} ثانیه دیگر</span>
+                  )}
+                  <button onClick={() => setStep(1)} className="text-gray-400 hover:text-gray-600">ویرایش شماره</button>
+                </div>
+                <button onClick={handleVerifyOtp} disabled={loading || otp.length < 6} className="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-200 text-white p-4 rounded-2xl font-bold shadow-lg shadow-green-100 transition-all">
+                  {loading ? <Loader2 className="animate-spin mx-auto" /> : "تایید و ادامه"}
+                </button>
+              </>
+            )}
+
+            {step === 3 && (
+              <>
+                <div className="space-y-3">
+                  <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="نام" className="w-full bg-gray-50 border-2 border-gray-100 rounded-2xl p-4 outline-none focus:border-purple-500 transition-all" />
+                  <input type="text" value={family} onChange={(e) => setFamily(e.target.value)} placeholder="نام خانوادگی" className="w-full bg-gray-50 border-2 border-gray-100 rounded-2xl p-4 outline-none focus:border-purple-500 transition-all" />
+                </div>
+                <button onClick={handleRegister} disabled={loading} className="w-full bg-purple-600 hover:bg-purple-700 text-white p-4 rounded-2xl font-bold shadow-lg shadow-purple-200 transition-all">
+                  {loading ? <Loader2 className="animate-spin mx-auto" /> : "تکمیل ثبت‌نام"}
+                </button>
+              </>
+            )}
+          </motion.div>
+        </AnimatePresence>
+      </div>
     </div>
   );
 };
